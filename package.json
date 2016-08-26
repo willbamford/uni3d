@@ -1,0 +1,47 @@
+{
+  "name": "uni3d",
+  "version": "1.0.0",
+  "description": "Universal 3D rendering demo using regl, getres and headless-gl",
+  "main": "lib/index.js",
+  "browser": {
+    "./lib/index": "./lib/browser"
+  },
+  "scripts": {
+    "build": "browserify lib/index.js -s uni3d -o dist/uni3d.js",
+    "build:min": "browserify lib/index.js -s uni3d | uglifyjs -c > dist/uni3d.min.js",
+    "watch": "watchify lib/index.js -s uni3d -o dist/uni3d.js",
+    "lint": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebSeed/uni3d.git"
+  },
+  "keywords": [
+    "universal",
+    "3d",
+    "rendering",
+    "webgl",
+    "headless-gl",
+    "getres",
+    "regl"
+  ],
+  "author": "Will Bamford",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WebSeed/uni3d/issues"
+  },
+  "homepage": "https://github.com/WebSeed/uni3d#readme",
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "standard": "^8.0.0",
+    "uglifyify": "^3.0.2",
+    "watchify": "^3.7.0"
+  },
+  "dependencies": {
+    "getres": "^1.2.0",
+    "gl": "^4.0.2",
+    "gl-mat4": "^1.1.4",
+    "pngjs": "^3.0.0",
+    "regl": "^1.1.1"
+  }
+}
