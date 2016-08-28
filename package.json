@@ -40,7 +40,7 @@
   "dependencies": {
     "angle-normals": "^1.0.0",
     "bunny": "^1.0.1",
-    "getres": "^1.2.1",
+    "getres": "^1.2.3",
     "gl": "^4.0.2",
     "gl-mat4": "^1.1.4",
     "pngjs": "^3.0.0",
