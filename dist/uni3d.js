@@ -58,10 +58,11 @@ module.exports = drawBunny
 var mat4 = require('gl-mat4')
 
 function drawCommon (regl, flipY) {
+  const multiplier = flipY ? -1 : 1
   return regl({
     context: {
       view: (context, { tick }) => {
-        const t = tick * 0.05
+        const t = tick / 64 * 2 * Math.PI
         return mat4.lookAt([],
           [30 * Math.cos(t), 2.5, 30 * Math.sin(t)],
           [0, 2.5, 0],
@@ -80,8 +81,8 @@ function drawCommon (regl, flipY) {
       view: regl.context('view'),
       projection: ({viewportWidth, viewportHeight}) =>
         mat4.perspective([],
-          (flipY ? -1 : 1) * (Math.PI / 4),
-          (flipY ? -1 : 1) * (viewportWidth / viewportHeight),
+          Math.PI / 4,
+          viewportWidth / viewportHeight,
           0.01,
           1000),
       invView: ({view}) => mat4.invert([], view)
