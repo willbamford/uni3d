@@ -7,10 +7,29 @@
     "./lib/index": "./lib/browser"
   },
   "scripts": {
-    "build": "browserify lib/index.js -s uni3d -o dist/uni3d.js",
-    "build:min": "browserify lib/index.js -s uni3d | uglifyjs -c > dist/uni3d.min.js",
-    "watch": "watchify lib/index.js -s uni3d -o dist/uni3d.js",
-    "lint": "standard"
+    "clean": "rimraf lib dist",
+    "test": "standard",
+    "prepublish": "npm run clean && npm run test && npm run build",
+    "build": "mkdirp lib dist && npm run build:node && npm run build:browser && npm run build:browser:min",
+    "build:node": "BABEL_ENV=development babel src -d lib",
+    "build:node:watch": "BABEL_ENV=development babel src -d lib -w",
+    "build:browser": "BABEL_ENV=development browserify src/browser.js -s uni3d -o dist/uni3d.js -d",
+    "build:browser:watch": "BABEL_ENV=development watchify src/browser.js -s uni3d -o dist/uni3d.js -d",
+    "build:browser:min": "BABEL_ENV=production NODE_ENV=production browserify src/browser.js -s uni3d | uglifyjs -c > dist/uni3d.min.js",
+    "browser:sync": "browser-sync start --server --files 'dist'"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify"
+      ]
+    ]
+  },
+  "standard": {
+    "ignore": [
+      "/lib/",
+      "/dist/"
+    ]
   },
   "repository": {
     "type": "git",
@@ -32,7 +51,15 @@
   },
   "homepage": "https://github.com/WebSeed/uni3d#readme",
   "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-register": "^6.14.0",
+    "babelify": "^7.3.0",
+    "browser-sync": "^2.14.0",
     "browserify": "^13.1.0",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.5.4",
     "standard": "^8.0.0",
     "uglifyify": "^3.0.2",
     "watchify": "^3.7.0"
