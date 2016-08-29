@@ -9,7 +9,7 @@ function drawCommon (regl, flipY) {
         return mat4.lookAt([],
           [30 * Math.cos(t), 2.5, 30 * Math.sin(t)],
           [0, 2.5, 0],
-          [0, -1, 0])
+          [0, 1, 0])
       }
     },
     frag: `
