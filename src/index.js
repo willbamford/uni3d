@@ -39,8 +39,11 @@ const drawBackground = createDrawBackground(regl)
 const drawBunny = createDrawBunny(regl)
 
 function saveToGif () {
-  const cmd1 = 'ffmpeg -v warning -f image2 -i tmp/bunny%d.jpg -vf "fps=15,scale=256:-1:flags=lanczos,palettegen" -y tmp/palette.png'
-  const cmd2 = 'ffmpeg -v warning -f image2 -i tmp/bunny%d.jpg -i tmp/palette.png -lavfi "fps=15,scale=256:-1:flags=lanczos [x]; [x][1:v] paletteuse" -y tmp/bunny.gif'
+  const fps = 25
+  const scale = 256
+  const logLevel = 'info' // 'warning'
+  const cmd1 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%d.jpg -vf "fps=${fps},scale=${scale}:-1:flags=lanczos,palettegen" -y tmp/palette.png`
+  const cmd2 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%d.jpg -i tmp/palette.png -lavfi "fps=${fps},scale=${scale}:-1:flags=lanczos[x];[x][1:v] paletteuse" -y tmp/bunny.gif`
 
   const paletteTimer = createTimer('Generate GIF Palette').start()
   execSync(cmd1, { stdio: 'inherit' })
