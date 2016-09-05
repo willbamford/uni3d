@@ -18,7 +18,7 @@ const jpegOptions = {
   format: jpeg.FORMAT_RGBA,
   width,
   height,
-  quality: 90
+  quality: 100
 }
 
 const timers = createTimer([
@@ -41,11 +41,14 @@ const drawBunny = createDrawBunny(regl)
 function saveToGif () {
   const fps = 25
   const scale = 256
+  const filter = 'bicubic' // 'lanczos'
   const logLevel = 'warning' // 'info'
 
-  const cmd1 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%d.jpg -vf "fps=${fps},scale=${scale}:-1:flags=lanczos,palettegen" -y tmp/palette.png`
-  const cmd2 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%d.jpg -i tmp/palette.png -lavfi "fps=${fps},scale=${scale}:-1:flags=lanczos[x];[x][1:v] paletteuse" -y tmp/bunny.gif`
-  const cmd3 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%d.jpg -vf scale=${scale}:-1 -c:v libx264 -preset medium -b:v 1000k -y tmp/bunny.mp4`
+  const cmd1 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%04d.jpg -vf "fps=${fps},scale=${scale}:-1:flags=${filter},palettegen" -y tmp/palette.png`
+  const cmd2 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%04d.jpg -i tmp/palette.png -lavfi "fps=${fps},scale=${scale}:-1:flags=${filter}[x];[x][1:v] paletteuse" -y tmp/bunny.gif`
+  const cmd3 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%04d.jpg -vf scale=${scale}:-1 -c:v libx264 -preset medium -b:v 1000k -y tmp/bunny.mp4`
+  // const cmd4 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%03d.jpg -vf scale=${scale}:-1 -c:v libvpx -preset medium -b:v 1000k -y tmp/bunny.webm`
+  const cmd4 = `montage -border 0 -geometry 256x -tile 6x -quality 75% tmp/bunny*.jpg tmp/montage.jpg`
 
   const timerPalette = createTimer('Generate GIF Palette').start()
   execSync(cmd1, { stdio: 'inherit' })
@@ -59,9 +62,26 @@ function saveToGif () {
   execSync(cmd3, { stdio: 'inherit' })
   timerMp4Encode.stop()
 
+  const timerMontage = createTimer('Montage').start()
+  execSync(cmd4, { stdio: 'inherit' })
+  timerMontage.stop()
+
+  // const timerWebMEncode = createTimer('Encode WebM').start()
+  // execSync(cmd4, { stdio: 'inherit' })
+  // timerWebMEncode.stop()
+
   timerPalette.log(1)
   timerGifEncode.log(1)
   timerMp4Encode.log(1)
+  // timerWebMEncode.log(1)
+  timerMontage.log(1)
+}
+
+function padToFour (number) {
+  if (number <= 9999) {
+    number = ('000' + number).slice(-4)
+  }
+  return number
 }
 
 loadResources(regl)
@@ -90,7 +110,7 @@ loadResources(regl)
         timerEncodeJpeg.stop()
 
         timerSaveJpeg.start()
-        fs.writeFileSync('tmp/bunny' + i + '.jpg', encoded, 'binary')
+        fs.writeFileSync('tmp/bunny' + padToFour(i) + '.jpg', encoded, 'binary')
         timerSaveJpeg.stop()
       })
     }
