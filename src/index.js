@@ -41,18 +41,27 @@ const drawBunny = createDrawBunny(regl)
 function saveToGif () {
   const fps = 25
   const scale = 256
-  const logLevel = 'info' // 'warning'
+  const logLevel = 'warning' // 'info'
+
   const cmd1 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%d.jpg -vf "fps=${fps},scale=${scale}:-1:flags=lanczos,palettegen" -y tmp/palette.png`
   const cmd2 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%d.jpg -i tmp/palette.png -lavfi "fps=${fps},scale=${scale}:-1:flags=lanczos[x];[x][1:v] paletteuse" -y tmp/bunny.gif`
+  const cmd3 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%d.jpg -vf scale=${scale}:-1 -c:v libx264 -preset medium -b:v 1000k -y tmp/bunny.mp4`
 
-  const paletteTimer = createTimer('Generate GIF Palette').start()
+  const timerPalette = createTimer('Generate GIF Palette').start()
   execSync(cmd1, { stdio: 'inherit' })
-  paletteTimer.stop()
-  const encodeTimer = createTimer('Encode GIF').start()
+  timerPalette.stop()
+
+  const timerGifEncode = createTimer('Encode GIF').start()
   execSync(cmd2, { stdio: 'inherit' })
-  encodeTimer.stop()
-  paletteTimer.log(1)
-  encodeTimer.log(1)
+  timerGifEncode.stop()
+
+  const timerMp4Encode = createTimer('Encode MP4').start()
+  execSync(cmd3, { stdio: 'inherit' })
+  timerMp4Encode.stop()
+
+  timerPalette.log(1)
+  timerGifEncode.log(1)
+  timerMp4Encode.log(1)
 }
 
 loadResources(regl)

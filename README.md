@@ -11,6 +11,8 @@ http://ubwg.net/b/full-list-of-ffmpeg-flags-and-options
 
 I.e. `ffmpeg -h full`
 
+FFMPEG H.264 Guide:
+https://trac.ffmpeg.org/wiki/Encode/H.264
 
 Original:
 ```
@@ -25,4 +27,10 @@ ffmpeg -f image2 -i bunny%d.jpg -vf scale=300:-1 -gifflags -transdiff -y bunny-n
 Trans (optimised):
 ```
 ffmpeg -f image2 -i bunny%d.jpg -vf scale=300:-1 -gifflags +transdiff -y bunny-trans.gif
+```
+
+To memory?
+```
+ffmpeg -y -i input -c:v libx264 -preset medium -b:v 555k -pass 1 -c:a libfdk_aac -b:a 128k -f mp4 /dev/null && \
+ffmpeg -i input -c:v libx264 -preset medium -b:v 555k -pass 2 -c:a libfdk_aac -b:a 128k output.mp4
 ```
