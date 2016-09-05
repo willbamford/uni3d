@@ -1,7 +1,7 @@
 import mat4 from 'gl-mat4'
 
 function drawCommon (regl, flipY) {
-  // const multiplier = flipY ? -1 : 1
+  const flip = flipY ? -1 : 1
   return regl({
     context: {
       view: (context, { tick }) => {
@@ -9,7 +9,7 @@ function drawCommon (regl, flipY) {
         return mat4.lookAt([],
           [30 * Math.cos(t), 2.5, 30 * Math.sin(t)],
           [0, 2.5, 0],
-          [0, 1, 0])
+          [0, flip, 0])
       }
     },
     frag: `
@@ -25,7 +25,7 @@ function drawCommon (regl, flipY) {
       projection: ({viewportWidth, viewportHeight}) =>
         mat4.perspective([],
           Math.PI / 4,
-          viewportWidth / viewportHeight,
+          flip * viewportWidth / viewportHeight,
           0.01,
           1000),
       invView: ({view}) => mat4.invert([], view)

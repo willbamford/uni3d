@@ -11,11 +11,12 @@
     "test": "standard",
     "prepublish": "npm run clean && npm run test && npm run build",
     "build": "mkdirp lib dist && npm run build:node && npm run build:browser && npm run build:browser:min",
-    "build:node": "BABEL_ENV=development babel src -d lib",
-    "build:node:watch": "BABEL_ENV=development babel src -d lib -w",
-    "build:browser": "BABEL_ENV=development browserify src/browser.js -s uni3d -o dist/uni3d.js -d",
-    "build:browser:watch": "BABEL_ENV=development watchify src/browser.js -s uni3d -o dist/uni3d.js -d",
-    "build:browser:min": "BABEL_ENV=production NODE_ENV=production browserify src/browser.js -s uni3d | uglifyjs -c > dist/uni3d.min.js",
+    "node:build": "BABEL_ENV=development babel src -d lib",
+    "node:watch": "BABEL_ENV=development babel src -d lib -w",
+    "node:profile": "node-debug --web-port=8083 .",
+    "browser:build": "BABEL_ENV=development browserify src/browser.js -s uni3d -o dist/uni3d.js -d",
+    "browser:watch": "BABEL_ENV=development watchify src/browser.js -s uni3d -o dist/uni3d.js -d",
+    "browser:min": "BABEL_ENV=production NODE_ENV=production browserify src/browser.js -s uni3d | uglifyjs -c > dist/uni3d.min.js",
     "browser:sync": "browser-sync start --server --files 'dist'"
   },
   "browserify": {
@@ -59,6 +60,7 @@
     "browser-sync": "^2.14.0",
     "browserify": "^13.1.0",
     "mkdirp": "^0.5.1",
+    "node-inspector": "^0.12.8",
     "rimraf": "^2.5.4",
     "standard": "^8.0.0",
     "uglifyify": "^3.0.2",
@@ -67,12 +69,15 @@
   "dependencies": {
     "angle-normals": "^1.0.0",
     "bunny": "^1.0.1",
+    "fluent-ffmpeg": "^2.1.0",
     "getres": "^1.2.3",
     "gif-encoder": "^0.5.0",
     "gl": "^4.0.2",
     "gl-mat4": "^1.1.4",
+    "jpeg-turbo": "^0.4.0",
     "pngjs": "^3.0.0",
     "regl": "^1.1.1",
-    "resl": "^1.0.3"
+    "resl": "^1.0.3",
+    "unitimer": "^3.1.0"
   }
 }
