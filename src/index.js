@@ -43,10 +43,11 @@ function saveToGif () {
   const scale = 256
   const filter = 'bicubic' // 'lanczos'
   const logLevel = 'warning' // 'info'
+  const input = 'tmp/bunny%04d.jpg'
 
-  const cmd1 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%04d.jpg -vf "fps=${fps},scale=${scale}:-1:flags=${filter},palettegen" -y tmp/palette.png`
-  const cmd2 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%04d.jpg -i tmp/palette.png -lavfi "fps=${fps},scale=${scale}:-1:flags=${filter}[x];[x][1:v] paletteuse" -y tmp/bunny.gif`
-  const cmd3 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%04d.jpg -vf scale=${scale}:-1 -c:v libx264 -preset medium -b:v 1000k -y tmp/bunny.mp4`
+  const cmd1 = `ffmpeg -v ${logLevel} -f image2 -i ${input} -vf "fps=${fps},scale=${scale}:-1:flags=${filter},palettegen" -y tmp/palette.png`
+  const cmd2 = `ffmpeg -v ${logLevel} -f image2 -i ${input} -i tmp/palette.png -lavfi "fps=${fps},scale=${scale}:-1:flags=${filter}[x];[x][1:v] paletteuse" -y tmp/bunny.gif`
+  const cmd3 = `ffmpeg -v ${logLevel} -f image2 -i ${input} -vf scale=${scale}:-1 -c:v libx264 -preset medium -b:v 1000k -y tmp/bunny.mp4`
   // const cmd4 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%03d.jpg -vf scale=${scale}:-1 -c:v libvpx -preset medium -b:v 1000k -y tmp/bunny.webm`
   const cmd4 = `montage -border 0 -geometry 256x -tile 6x -quality 75% tmp/bunny*.jpg tmp/montage.jpg`
 
