@@ -7,6 +7,7 @@
     "./lib/index": "./lib/browser"
   },
   "scripts": {
+    "start": "npm run browser:sync & npm run browser:watch & npm run node:watch",
     "clean": "rimraf lib dist",
     "test": "standard",
     "prepublish": "npm run clean && npm run test && npm run build",
@@ -77,6 +78,7 @@
     "jpeg-turbo": "^0.4.0",
     "pngjs": "^3.0.0",
     "regl": "^1.1.1",
+    "regl-camera": "^1.0.0",
     "resl": "^1.0.3",
     "unitimer": "^3.1.0"
   }
