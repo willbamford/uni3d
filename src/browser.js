@@ -14,10 +14,7 @@ const drawBunny = createDrawBunny(regl)
 loadResources(regl)
   .then((cube) => {
     regl.frame(({ tick }) => {
-      const dtheta = 0.1
-      camera({ dtheta }, (props) => {
-        // props.dtheta = Math.PI / 64
-        // console.log('camera props', props)
+      camera({ dtheta: 0.05, dphi: 0.001 }, () => {
         drawCommon({ cube, tick }, () => {
           drawBackground()
           drawBunny()
