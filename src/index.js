@@ -3,6 +3,7 @@ import createREGL from 'regl'
 import fs from 'fs'
 import loadResources from './load-resources'
 import { toRgba } from './gl-to'
+import createCamera from './camera'
 import createDrawCommon from './draw-common'
 import createDrawBackground from './draw-background'
 import createDrawBunny from './draw-bunny'
@@ -22,23 +23,25 @@ const jpegOptions = {
 }
 
 const timers = createTimer([
-  'Draw', 'Save to RGBA', 'Encode JPEG', 'Save JPEG', 'Encode & Save GIF', 'Total'
+  'Draw', 'Save to RGBA', 'Encode JPEG', 'Save JPEG', 'Export', 'Total'
 ])
 const [
   timerDraw,
   timerRgba,
   timerEncodeJpeg,
   timerSaveJpeg,
-  timerGif,
+  timerExport,
   timerTotal
 ] = timers
 
 const regl = createREGL(gl)
+const flipY = true
+const camera = createCamera(regl, flipY)
 const drawCommon = createDrawCommon(regl, true)
 const drawBackground = createDrawBackground(regl)
 const drawBunny = createDrawBunny(regl)
 
-function saveToGif () {
+function exportRender () {
   const fps = 25
   const scale = 256
   const filter = 'bicubic' // 'lanczos'
@@ -89,36 +92,39 @@ loadResources(regl)
   .then((cube) => {
     timerTotal.start()
     const glToRgba = toRgba(gl, width, height)
-    for (var i = 0; i < 64; i += 1) {
+    for (var i = 0; i < 1; i += 1) {
       var tick = i
 
       timerDraw.start()
-      drawCommon({ cube, tick }, () => {
-        regl.clear({
-          color: [0, 0, 0, 1],
-          depth: 1
+
+      camera(() => {
+        drawCommon({ cube, tick }, () => {
+          regl.clear({
+            color: [0, 0, 0, 1],
+            depth: 1
+          })
+          drawBackground()
+          drawBunny()
+          timerDraw.stop()
+
+          timerRgba.start()
+          var rgba = glToRgba()
+          timerRgba.stop()
+
+          timerEncodeJpeg.start()
+          const encoded = jpeg.compressSync(rgba, jpegOptions)
+          timerEncodeJpeg.stop()
+
+          timerSaveJpeg.start()
+          fs.writeFileSync('tmp/bunny' + padToFour(i) + '.jpg', encoded, 'binary')
+          timerSaveJpeg.stop()
         })
-        drawBackground()
-        drawBunny()
-        timerDraw.stop()
-
-        timerRgba.start()
-        var rgba = glToRgba()
-        timerRgba.stop()
-
-        timerEncodeJpeg.start()
-        const encoded = jpeg.compressSync(rgba, jpegOptions)
-        timerEncodeJpeg.stop()
-
-        timerSaveJpeg.start()
-        fs.writeFileSync('tmp/bunny' + padToFour(i) + '.jpg', encoded, 'binary')
-        timerSaveJpeg.stop()
       })
     }
 
-    timerGif.start()
-    saveToGif()
-    timerGif.stop()
+    timerExport.start()
+    exportRender()
+    timerExport.stop()
 
     timerTotal.stop()
 

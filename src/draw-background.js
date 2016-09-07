@@ -1,25 +1,28 @@
+import createCube from './cube'
+
+const cube = createCube(1000, 1000, 1000)
+
 function drawBackground (regl) {
   return regl({
     vert: `
-    precision mediump float;
-    attribute vec2 position;
-    uniform mat4 view;
-    varying vec3 reflectDir;
-    void main() {
-      reflectDir = (view * vec4(position, 1, 0)).xyz;
-      gl_Position = vec4(position, 0, 1);
-    }`,
+      precision mediump float;
+      uniform mat4 view, projection;
+      attribute vec3 position;
+      varying vec3 reflectDir;
+      void main() {
+         reflectDir = position;
+         vec4 eye = view * vec4(position, 1);
+         gl_Position = projection * eye;
+      }
+    `,
     attributes: {
-      position: [
-        -4, -4,
-        -4, 4,
-        8, 0]
+      position: cube.positions
     },
     depth: {
       mask: false,
       enable: false
     },
-    count: 3
+    elements: cube.cells
   })
 }
 
