@@ -13,7 +13,7 @@ import { execSync } from 'child_process'
 
 const width = 512
 const height = 512
-const gl = createGL(width, height)
+const gl = createGL(width, height, { preserveDrawingBuffer: true })
 
 const jpegOptions = {
   format: jpeg.FORMAT_RGBA,
@@ -81,55 +81,53 @@ function exportRender () {
   timerMontage.log(1)
 }
 
-function padToFour (number) {
+function pad4 (number) {
   if (number <= 9999) {
     number = ('000' + number).slice(-4)
   }
   return number
 }
 
-loadResources(regl)
-  .then((cube) => {
-    timerTotal.start()
-    const glToRgba = toRgba(gl, width, height)
-    for (var i = 0; i < 1; i += 1) {
-      var tick = i
-
-      timerDraw.start()
-
-      camera(() => {
-        drawCommon({ cube, tick }, () => {
-          regl.clear({
-            color: [0, 0, 0, 1],
-            depth: 1
-          })
-          drawBackground()
-          drawBunny()
-          timerDraw.stop()
-
-          timerRgba.start()
-          var rgba = glToRgba()
-          timerRgba.stop()
-
-          timerEncodeJpeg.start()
-          const encoded = jpeg.compressSync(rgba, jpegOptions)
-          timerEncodeJpeg.stop()
-
-          timerSaveJpeg.start()
-          fs.writeFileSync('tmp/bunny' + padToFour(i) + '.jpg', encoded, 'binary')
-          timerSaveJpeg.stop()
+function drawScene (cube) {
+  timerTotal.start()
+  let pixels = null
+  const frames = 64
+  for (var i = 0; i < frames; i += 1) {
+    var tick = i
+    timerDraw.start()
+    camera({ dtheta: 2 * Math.PI / frames }, () => {
+      drawCommon({ cube }, () => {
+        regl.clear({
+          color: [0, 0, 0, 1],
+          depth: 1
         })
+        drawBackground()
+        drawBunny()
+        timerDraw.stop()
+
+        timerRgba.start()
+        pixels = regl.read(pixels || new Uint8Array(4 * width * height))
+        timerRgba.stop()
+
+        timerEncodeJpeg.start()
+        const encoded = jpeg.compressSync(pixels, jpegOptions)
+        timerEncodeJpeg.stop()
+
+        timerSaveJpeg.start()
+        fs.writeFileSync('tmp/bunny' + pad4(i) + '.jpg', encoded, 'binary')
+        timerSaveJpeg.stop()
       })
-    }
+    })
+  }
+  timerExport.start()
+  exportRender()
+  timerExport.stop()
+  timerTotal.stop()
+  timers.forEach((timer) => timer.log(1))
+}
 
-    timerExport.start()
-    exportRender()
-    timerExport.stop()
-
-    timerTotal.stop()
-
-    timers.forEach((timer) => timer.log(1))
-  })
+loadResources(regl)
+  .then(drawScene)
   .catch((err) => {
     console.error(err)
   })

@@ -1,7 +1,6 @@
 import mat4 from 'gl-mat4'
 
-function drawCommon (regl, flipY) {
-  const flip = flipY ? -1 : 1
+function drawCommon (regl) {
   return regl({
     frag: `
       precision mediump float;
