@@ -2,25 +2,18 @@ import createGL from 'gl'
 import createREGL from 'regl'
 import fs from 'fs'
 import loadResources from './load-resources'
-import { toRgba } from './gl-to'
+import { toJpeg } from './gl-to'
 import createCamera from './camera'
 import createDrawCommon from './draw-common'
 import createDrawBackground from './draw-background'
 import createDrawBunny from './draw-bunny'
 import createTimer from 'unitimer'
-import jpeg from 'jpeg-turbo'
+
 import { execSync } from 'child_process'
 
 const width = 512
 const height = 512
 const gl = createGL(width, height, { preserveDrawingBuffer: true })
-
-const jpegOptions = {
-  format: jpeg.FORMAT_RGBA,
-  width,
-  height,
-  quality: 100
-}
 
 const timers = createTimer([
   'Draw', 'Save to RGBA', 'Encode JPEG', 'Save JPEG', 'Export', 'Total'
@@ -51,7 +44,6 @@ function exportRender () {
   const cmd1 = `ffmpeg -v ${logLevel} -f image2 -i ${input} -vf "fps=${fps},scale=${scale}:-1:flags=${filter},palettegen" -y tmp/palette.png`
   const cmd2 = `ffmpeg -v ${logLevel} -f image2 -i ${input} -i tmp/palette.png -lavfi "fps=${fps},scale=${scale}:-1:flags=${filter}[x];[x][1:v] paletteuse" -y tmp/bunny.gif`
   const cmd3 = `ffmpeg -v ${logLevel} -f image2 -i ${input} -vf scale=${scale}:-1 -c:v libx264 -preset medium -b:v 1000k -y tmp/bunny.mp4`
-  // const cmd4 = `ffmpeg -v ${logLevel} -f image2 -i tmp/bunny%03d.jpg -vf scale=${scale}:-1 -c:v libvpx -preset medium -b:v 1000k -y tmp/bunny.webm`
   const cmd4 = `montage -border 0 -geometry 256x -tile 6x -quality 75% tmp/bunny*.jpg tmp/montage.jpg`
 
   const timerPalette = createTimer('Generate GIF Palette').start()
@@ -70,14 +62,9 @@ function exportRender () {
   execSync(cmd4, { stdio: 'inherit' })
   timerMontage.stop()
 
-  // const timerWebMEncode = createTimer('Encode WebM').start()
-  // execSync(cmd4, { stdio: 'inherit' })
-  // timerWebMEncode.stop()
-
   timerPalette.log(1)
   timerGifEncode.log(1)
   timerMp4Encode.log(1)
-  // timerWebMEncode.log(1)
   timerMontage.log(1)
 }
 
@@ -92,10 +79,10 @@ function drawScene (cube) {
   timerTotal.start()
   let pixels = null
   const frames = 64
+  const dtheta = 2 * Math.PI / frames
   for (var i = 0; i < frames; i += 1) {
-    var tick = i
     timerDraw.start()
-    camera({ dtheta: 2 * Math.PI / frames }, () => {
+    camera({ dtheta }, () => {
       drawCommon({ cube }, () => {
         regl.clear({
           color: [0, 0, 0, 1],
@@ -110,7 +97,7 @@ function drawScene (cube) {
         timerRgba.stop()
 
         timerEncodeJpeg.start()
-        const encoded = jpeg.compressSync(pixels, jpegOptions)
+        const encoded = toJpeg(pixels, width, height)
         timerEncodeJpeg.stop()
 
         timerSaveJpeg.start()
@@ -128,6 +115,4 @@ function drawScene (cube) {
 
 loadResources(regl)
   .then(drawScene)
-  .catch((err) => {
-    console.error(err)
-  })
+  .catch(console.error)

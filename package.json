@@ -11,7 +11,7 @@
     "clean": "rimraf lib dist",
     "test": "standard",
     "prepublish": "npm run clean && npm run test && npm run build",
-    "build": "mkdirp lib dist && npm run build:node && npm run build:browser && npm run build:browser:min",
+    "build": "mkdirp lib dist && npm run node:build && npm run browser:build && npm run browser:build:min",
     "node:build": "BABEL_ENV=development babel src -d lib",
     "node:watch": "BABEL_ENV=development babel src -d lib -w",
     "node:profile": "node-debug --web-port=8083 .",

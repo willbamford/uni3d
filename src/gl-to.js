@@ -1,4 +1,5 @@
 import pngjs from 'pngjs'
+import jpeg from 'jpeg-turbo'
 const PNG = pngjs.PNG
 
 function imageDataToPng (imageData) {
@@ -36,8 +37,21 @@ function toPng (gl, width, height) {
   return imageDataToPng(toImageData(gl, width, height))
 }
 
+function toJpeg (pixels, width, height) {
+  return jpeg.compressSync(
+    pixels,
+    {
+      format: jpeg.FORMAT_RGBA,
+      width,
+      height,
+      quality: 95
+    }
+  )
+}
+
 export {
   toRgba,
   toImageData,
-  toPng
+  toPng,
+  toJpeg
 }

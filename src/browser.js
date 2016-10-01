@@ -11,17 +11,17 @@ const drawCommon = createDrawCommon(regl)
 const drawBackground = createDrawBackground(regl)
 const drawBunny = createDrawBunny(regl)
 
-loadResources(regl)
-  .then((cube) => {
-    regl.frame(({ tick }) => {
-      camera({ dtheta: 0.05 }, () => {
-        drawCommon({ cube, tick }, () => {
-          drawBackground()
-          drawBunny()
-        })
+function drawScene (cube) {
+  regl.frame(({ tick }) => {
+    camera(() => {
+      drawCommon({ cube, tick }, () => {
+        drawBackground()
+        drawBunny()
       })
     })
   })
-  .catch(err => {
-    console.error(err)
-  })
+}
+
+loadResources(regl)
+  .then(drawScene)
+  .catch(console.err)
