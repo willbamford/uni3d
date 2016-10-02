@@ -75,7 +75,7 @@ function pad4 (number) {
   return number
 }
 
-function drawScene (cube) {
+function begin (cube) {
   timerTotal.start()
   let pixels = null
   const frames = 64
@@ -114,5 +114,5 @@ function drawScene (cube) {
 }
 
 loadResources(regl)
-  .then(drawScene)
+  .then(begin)
   .catch(console.error)
