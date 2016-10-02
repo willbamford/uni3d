@@ -11,20 +11,17 @@
     "clean": "rimraf lib dist",
     "test": "standard",
     "prepublish": "npm run clean && npm run test && npm run build",
-    "build": "mkdirp lib dist && npm run node:build && npm run browser:build && npm run browser:min && npm run worker:build && npm run worker:min",
-
+    "build": "mkdirp lib dist && npm run node:build && npm run browser:build && npm run browser:min && npm run renderer:build && npm run renderer:min",
     "node:build": "BABEL_ENV=development babel src -d lib",
     "node:watch": "BABEL_ENV=development babel src -d lib -w",
     "node:profile": "node-debug --web-port=8083 .",
-
     "browser:build": "BABEL_ENV=development browserify src/browser.js -s uni3d -o dist/uni3d.js -d",
     "browser:watch": "BABEL_ENV=development watchify src/browser.js -s uni3d -o dist/uni3d.js -d",
     "browser:min": "BABEL_ENV=production NODE_ENV=production browserify src/browser.js -s uni3d | uglifyjs -c > dist/uni3d.min.js",
     "browser:sync": "browser-sync start --server --files 'dist'",
-
-    "worker:build": "BABEL_ENV=development browserify src/worker.js -s worker -o dist/worker.js -d",
-    "worker:watch": "BABEL_ENV=development watchify src/worker.js -s worker -o dist/worker.js -d",
-    "worker:min": "BABEL_ENV=production NODE_ENV=production browserify src/worker.js -s worker | uglifyjs -c > dist/worker.min.js"
+    "renderer:build": "BABEL_ENV=development browserify src/renderer.js -s renderer -o dist/renderer.js -d",
+    "renderer:watch": "BABEL_ENV=development watchify src/renderer.js -s renderer -o dist/renderer.js -d",
+    "renderer:min": "BABEL_ENV=production NODE_ENV=production browserify src/renderer.js -s renderer | uglifyjs -c > dist/renderer.min.js"
   },
   "browserify": {
     "transform": [
