@@ -8,6 +8,7 @@ import createDrawCommon from './draw-common'
 import createDrawBackground from './draw-background'
 import createDrawBunny from './draw-bunny'
 import createTimer from 'unitimer'
+import { pad4 } from './pad'
 
 import { execSync } from 'child_process'
 
@@ -16,11 +17,11 @@ const height = 512
 const gl = createGL(width, height, { preserveDrawingBuffer: true })
 
 const timers = createTimer([
-  'Draw', 'Save to RGBA', 'Encode JPEG', 'Save JPEG', 'Export', 'Total'
+  'Draw', 'Pixels', 'Encode JPEG', 'Save JPEG', 'Export', 'Total'
 ])
 const [
   timerDraw,
-  timerRgba,
+  timerPixels,
   timerEncodeJpeg,
   timerSaveJpeg,
   timerExport,
@@ -68,13 +69,6 @@ function exportRender () {
   timerMontage.log(1)
 }
 
-function pad4 (number) {
-  if (number <= 9999) {
-    number = ('000' + number).slice(-4)
-  }
-  return number
-}
-
 function begin (cube) {
   timerTotal.start()
   let pixels = null
@@ -92,9 +86,9 @@ function begin (cube) {
         drawBunny()
         timerDraw.stop()
 
-        timerRgba.start()
+        timerPixels.start()
         pixels = regl.read(pixels || new Uint8Array(4 * width * height))
-        timerRgba.stop()
+        timerPixels.stop()
 
         timerEncodeJpeg.start()
         const encoded = toJpeg(pixels, width, height)
