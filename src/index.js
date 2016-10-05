@@ -30,7 +30,7 @@ const [
 const regl = createREGL(gl)
 const flipY = true
 const camera = createCamera(regl, flipY)
-const drawCommon = createDrawCommon(regl, true)
+const drawCommon = createDrawCommon(regl)
 const drawBackground = createDrawBackground(regl)
 const drawBunny = createDrawBunny(regl)
 
