@@ -8,8 +8,8 @@ import createTimer from 'unitimer'
 import range from './range'
 
 const canvas = document.createElement('canvas')
-canvas.width = 1024
-canvas.height = 1024
+canvas.width = 512
+canvas.height = 512
 document.body.appendChild(canvas)
 
 let socket = null
@@ -113,13 +113,10 @@ function next () {
 function done () {
   console.log('Done!')
   timerTotal.stop()
+  const timings = timers.map((timer) => timer.info(1)).join('\n')
+  console.log(timings)
+  sendObject({ type: 'done', timings })
   timers.forEach((timer) => timer.log(1))
-  timers.forEach((timer) => {
-    sendObject({
-      type: 'timer',
-      info: timer.info(1)
-    })
-  })
 }
 
 function enqueueFrames (cube) {
