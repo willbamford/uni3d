@@ -1,11 +1,12 @@
 import range from './range'
 import createConnection from './connection'
 
-function createBridge (messageHandler, numOfConnections = 64) {
+function createBridge (childHandler, numOfConnections = 64) {
   return new Promise((resolve, reject) => {
 
     let connections = []
     let prev = 0
+    let initCount = 0
 
     function getConn (n) {
       n = typeof n !== 'undefined' ? n : prev + 1
@@ -22,6 +23,29 @@ function createBridge (messageHandler, numOfConnections = 64) {
       getConn(n).sendObject(object)
     }
 
+    function getConnectionCount () {
+      return connections.length
+    }
+
+    const bridge = {
+      sendBinary,
+      sendObject,
+      getConnectionCount
+    }
+
+    function messageHandler (message) {
+      switch (message.type) {
+        case 'init':
+          initCount += 1
+          if (initCount === numOfConnections) {
+            resolve(bridge)
+          }
+          break;
+        default:
+          return childHandler(message)
+      }
+    }
+
     const promises = range(numOfConnections).map((n) => {
       console.log(`Creating connection #${n}`)
       return createConnection(messageHandler)
@@ -30,13 +54,6 @@ function createBridge (messageHandler, numOfConnections = 64) {
     Promise.all(promises)
       .then((conns) => {
         connections = conns
-        return {
-          sendBinary,
-          sendObject
-        }
-      })
-      .then((bridge) => {
-        return resolve(bridge)
       })
       .catch(reject)
   })
