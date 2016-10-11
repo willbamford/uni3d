@@ -101,7 +101,7 @@ function begin (cube) {
     })
   }
   timerExport.start()
-  exportRender()
+  // exportRender()
   timerExport.stop()
   timerTotal.stop()
   timers.forEach((timer) => timer.log(1))

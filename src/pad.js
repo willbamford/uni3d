@@ -12,7 +12,7 @@ function pad4 (number) {
   return number
 }
 
-export default {
+export {
   pad2,
   pad4
 }
