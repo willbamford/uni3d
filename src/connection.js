@@ -29,8 +29,10 @@ const workerScript = `
 const blob = new Blob([workerScript], { type: 'application/javascript' })
 const workerUrl = window.URL.createObjectURL(blob)
 
-function createConnection (messageHandler) {
+function createWorkerConnection (forwardHandler) {
   return new Promise((resolve, reject) => {
+
+    const worker = new Worker(workerUrl)
 
     function sendBinary (bytes) {
       worker.postMessage(bytes)
@@ -40,25 +42,71 @@ function createConnection (messageHandler) {
       worker.postMessage(JSON.stringify(object))
     }
 
-    var worker = new Worker(workerUrl)
-    worker.onmessage = (message) => {
+    function messageHandler (message) {
       if (typeof message.data === 'string') {
         const o = JSON.parse(message.data)
         switch (o.type) {
           case 'socketOpen':
             return resolve({
               sendBinary,
-              sendObject
+              sendObject,
+              worker
             })
           case 'socketError':
             return reject(o.value)
         }
-        return messageHandler(o)
+        return forwardHandler(o)
       } else {
-        return messageHandler(message)
+        return forwardHandler(message)
       }
     }
+
+    worker.onmessage = messageHandler
   })
 }
 
-export default createConnection
+function createConnection (forwardHandler) {
+  return new Promise((resolve, reject) => {
+
+    var socket = new WebSocket('ws://localhost:8090')
+    socket.binaryType = 'arraybuffer'
+
+    function sendBinary (bytes) {
+      socket.send(bytes)
+    }
+
+    function sendObject (object) {
+      socket.send(JSON.stringify(object))
+    }
+
+    function openHandler (event) {
+      resolve({
+        sendBinary,
+        sendObject,
+        socket
+      })
+    }
+
+    function errorHandler (error) {
+      reject(error)
+    }
+
+    function messageHandler (message) {
+      if (typeof message.data === 'string') {
+        const o = JSON.parse(message.data)
+        forwardHandler(o)
+      } else {
+        forwardHandler(message.data)
+      }
+    }
+
+    socket.onopen = openHandler
+    socket.onerror = errorHandler
+    socket.onmessage = messageHandler
+  })
+}
+
+export {
+  createConnection,
+  createWorkerConnection
+}

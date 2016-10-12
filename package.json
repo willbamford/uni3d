@@ -16,11 +16,11 @@
     "node:watch": "BABEL_ENV=development babel src -d lib -w",
     "node:profile": "node-debug --web-port=8083 .",
     "browser:build": "BABEL_ENV=development browserify src/browser.js -s uni3d -o dist/uni3d.js -d",
-    "browser:watch": "BABEL_ENV=development watchify src/browser.js -s uni3d -o dist/uni3d.js -d",
+    "browser:watch": "BABEL_ENV=development watchify src/browser.js -s uni3d -o dist/uni3d.js -d -v",
     "browser:min": "BABEL_ENV=production NODE_ENV=production browserify src/browser.js -s uni3d | uglifyjs -c > dist/uni3d.min.js",
     "browser:sync": "browser-sync start --server --files 'dist'",
     "renderer:build": "BABEL_ENV=development browserify src/renderer.js -s renderer -o dist/renderer.js -d",
-    "renderer:watch": "BABEL_ENV=development watchify src/renderer.js -s renderer -o dist/renderer.js -d",
+    "renderer:watch": "BABEL_ENV=development watchify src/renderer.js -s renderer -o dist/renderer.js -d -v",
     "renderer:min": "BABEL_ENV=production NODE_ENV=production browserify src/renderer.js -s renderer | uglifyjs -c > dist/renderer.min.js"
   },
   "browserify": {

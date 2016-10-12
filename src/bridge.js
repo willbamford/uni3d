@@ -1,5 +1,5 @@
 import range from './range'
-import createConnection from './connection'
+import { createConnection, createWorkerConnection } from './connection'
 
 function createBridge (childHandler, numOfConnections = 64) {
   return new Promise((resolve, reject) => {
@@ -48,7 +48,7 @@ function createBridge (childHandler, numOfConnections = 64) {
 
     const promises = range(numOfConnections).map((n) => {
       console.log(`Creating connection #${n}`)
-      return createConnection(messageHandler)
+      return createWorkerConnection(messageHandler)
     })
 
     Promise.all(promises)
