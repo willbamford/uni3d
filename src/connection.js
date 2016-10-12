@@ -1,32 +1,34 @@
 const workerScript = `
-  // Socket
   var socket = new WebSocket('ws://localhost:8090')
   socket.binaryType = 'arraybuffer'
-  socket.onopen = function onopen (event) {
+
+  function openHandler (event) {
     postMessage(JSON.stringify({ type: 'socketOpen' }))
   }
-  socket.onerror = function onerror (error) {
+  function errorHandler (error) {
     postMessage(JSON.stringify({ type: 'socketError', value: error }))
   }
-  socket.onmessage = function onmessage (message) {
-    // Send outside
+
+  function messageHandler (message) {
     if (typeof message.data === 'string') {
-      // JSON string
       postMessage(message.data)
     } else {
-      // Transfer object
-      postMessage(message.data, [message.data.buffer])
+      postMessage(message.data, [message.data.buffer]) // Transfer
     }
   }
 
-  // Web Worker
-  self.onmessage = function onmessage (e) {
-    // Send inside
+  function workerMessageHandler (e) {
     socket.send(e.data)
   }
+
+  socket.onopen = openHandler
+  socket.onerror = errorHandler
+  socket.onmessage = messageHandler
+
+  self.onmessage = workerMessageHandler
 `
 
-const blob = new Blob([workerScript], { type: 'application/javascript' })
+const blob = new Blob([workerScript])
 const workerUrl = window.URL.createObjectURL(blob)
 
 function createWorkerConnection (forwardHandler) {

@@ -65,9 +65,9 @@ function draw ({ frame, cube }) {
       // console.log(pixels.length)
       timerPixels.stop()
 
-      bridge.sendBinary(pixels, frame)
+      bridge.sendBinary(pixels)
       pendingCount += 1
-      // sendObject(frame, {
+      // sendObject({
       //   type: 'frame',
       //   frame,
       //   width: drawingBufferWidth,
@@ -92,7 +92,7 @@ function done () {
   timerTotal.stop()
   const timings = timers.map((timer) => timer.info(1)).join('\n')
   console.log(timings)
-  bridge.sendObject({ type: 'done', timings }, 0)
+  bridge.sendObject({ type: 'done', timings })
   timers.forEach((timer) => timer.log(1))
 }
 
@@ -132,7 +132,7 @@ function process() {
     type: 'ready',
     mode: parallel ? 'parallel' : 'sequential',
     numOfConnections
-  }, 0)
+  })
 }
 
 let bridge = null

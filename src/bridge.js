@@ -19,8 +19,8 @@ function createBridge (childHandler, numOfConnections = 64) {
       getConn(n).sendBinary(bytes)
     }
 
-    function sendObject (object, n) {
-      getConn(n).sendObject(object)
+    function sendObject (object) {
+      getConn(0).sendObject(object)
     }
 
     function getConnectionCount () {
@@ -48,7 +48,7 @@ function createBridge (childHandler, numOfConnections = 64) {
 
     const promises = range(numOfConnections).map((n) => {
       console.log(`Creating connection #${n}`)
-      return createWorkerConnection(messageHandler)
+      return createConnection(messageHandler)
     })
 
     Promise.all(promises)
