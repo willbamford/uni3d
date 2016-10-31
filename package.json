@@ -10,6 +10,7 @@
     "start": "npm run browser:sync & npm run browser:watch & npm run node:watch",
     "clean": "rimraf lib dist",
     "test": "standard",
+    "fix": "standard --fix",
     "prepublish": "npm run clean && npm run test && npm run build",
     "build": "mkdirp lib dist && npm run node:build && npm run browser:build && npm run browser:min && npm run renderer:build && npm run renderer:min",
     "node:build": "BABEL_ENV=development babel src -d lib",

@@ -1,9 +1,8 @@
 import range from './range'
-import { createConnection, createWorkerConnection } from './connection'
+import { createConnection } from './connection'
 
 function createBridge (childHandler, numOfConnections = 64) {
   return new Promise((resolve, reject) => {
-
     let connections = []
     let prev = 0
     let initCount = 0
@@ -40,7 +39,7 @@ function createBridge (childHandler, numOfConnections = 64) {
           if (initCount === numOfConnections) {
             resolve(bridge)
           }
-          break;
+          break
         default:
           return childHandler(message)
       }

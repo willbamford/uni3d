@@ -28,13 +28,12 @@ const workerScript = `
   self.onmessage = workerMessageHandler
 `
 
-const blob = new Blob([workerScript])
+const blob = new window.Blob([ workerScript ])
 const workerUrl = window.URL.createObjectURL(blob)
 
 function createWorkerConnection (forwardHandler) {
   return new Promise((resolve, reject) => {
-
-    const worker = new Worker(workerUrl)
+    const worker = new window.Worker(workerUrl)
 
     function sendBinary (bytes) {
       worker.postMessage(bytes)
@@ -69,8 +68,7 @@ function createWorkerConnection (forwardHandler) {
 
 function createConnection (forwardHandler) {
   return new Promise((resolve, reject) => {
-
-    var socket = new WebSocket('ws://localhost:8090')
+    var socket = new window.WebSocket('ws://localhost:8090')
     socket.binaryType = 'arraybuffer'
 
     function sendBinary (bytes) {

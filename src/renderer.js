@@ -12,7 +12,6 @@ const canvas = document.createElement('canvas')
 canvas.width = 512
 canvas.height = 512
 document.body.appendChild(canvas)
-let socket = null
 const regl = createREGL({
   canvas,
   attributes: {
@@ -31,11 +30,9 @@ const [
   timerPixels,
   timerTotal
 ] = timers
-const port = 8090
 const parallel = true
 const sequential = !parallel
 let pendingCount = 0
-let initCount = 0
 const numOfFrames = 64
 const numOfConnections = 64
 const dtheta = 2 * Math.PI / numOfFrames
@@ -60,7 +57,7 @@ function draw ({ frame, cube }) {
 
       timerPixels.start()
       // pixels = pixels || new Uint8Array(4 * drawingBufferWidth * drawingBufferHeight)
-      let pixels = regl.read() //pixels)
+      let pixels = regl.read() // pixels)
       // pixels = new Uint8Array()
       // console.log(pixels.length)
       timerPixels.stop()
@@ -103,9 +100,6 @@ function enqueueFrames (cube) {
   next()
 }
 
-let hasServerInitialised = false
-let hasClientInitialised = false
-
 function messageHandler (message) {
   switch (message.type) {
     case 'frame:ack':
@@ -119,14 +113,14 @@ function messageHandler (message) {
       if (pendingCount === 0 && queue.length === 0) {
         done()
       }
-      break;
+      break
   }
 }
 
-function process() {
+function process () {
   loadResources()
     .then(enqueueFrames)
-    .catch(console.error) // TODO: handle this
+    .catch(console.error)
 
   bridge.sendObject({
     type: 'ready',
