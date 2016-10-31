@@ -82,7 +82,7 @@
     "jpeg-turbo": "^0.4.0",
     "pngjs": "^3.0.0",
     "regl": "^1.1.1",
-    "regl-camera": "^1.0.0",
+    "regl-camera": "1.1.0",
     "resl": "^1.0.3",
     "unitimer": "^3.1.0"
   }
