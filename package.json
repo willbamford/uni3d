@@ -74,6 +74,7 @@
   "dependencies": {
     "angle-normals": "^1.0.0",
     "bunny": "^1.0.1",
+    "canvas": "^1.6.2",
     "fluent-ffmpeg": "^2.1.0",
     "getres": "^1.2.3",
     "gif-encoder": "^0.5.0",
