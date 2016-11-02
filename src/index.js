@@ -8,7 +8,7 @@ import { toJpeg } from './gl-to'
 import createCamera from './camera'
 import createDrawCommon from './draw-common'
 import createDrawBackground from './draw-background'
-// import createDrawBunny from './draw-bunny'
+import createDrawBunny from './draw-bunny'
 import createDrawCube from './draw-cube'
 import createDrawTexCube from './draw-tex-cube'
 import { pad4 } from './pad'
@@ -36,7 +36,7 @@ const flipY = true
 const camera = createCamera(regl, flipY)
 const drawCommon = createDrawCommon(regl)
 const drawBackground = createDrawBackground(regl)
-const drawObject = createDrawCube(regl) // createDrawBunny(regl)
+const drawBunny = createDrawBunny(regl) // createDrawBunny(regl)
 const drawTexCube = createDrawTexCube(regl)
 
 function exportRender () {
@@ -78,17 +78,17 @@ function begin ({ cube, texture }) {
   let pixels = null
   const frames = 64
   const dtheta = 2 * Math.PI / frames
-  for (var i = 0; i < frames; i += 1) {
+  for (var frame = 0; frame < frames; frame += 1) {
     timerDraw.start()
     camera({ dtheta }, () => {
-      drawCommon({ cube }, () => {
+      drawCommon({ cube, frame }, () => {
         regl.clear({
           color: [0, 0, 0, 1],
           depth: 1
         })
         drawBackground()
-        // drawObject()
-        drawTexCube({ texture })
+        drawBunny()
+        // drawTexCube({ texture })
         timerDraw.stop()
 
         timerPixels.start()
@@ -100,7 +100,7 @@ function begin ({ cube, texture }) {
         timerEncodeJpeg.stop()
 
         timerSaveJpeg.start()
-        fs.writeFileSync('tmp/bunny' + pad4(i) + '.jpg', encoded, 'binary')
+        fs.writeFileSync('tmp/bunny' + pad4(frame) + '.jpg', encoded, 'binary')
         timerSaveJpeg.stop()
       })
     })
