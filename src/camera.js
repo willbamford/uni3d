@@ -4,7 +4,7 @@ function createCamera (regl, flipY = false) {
   return reglCamera(
     regl,
     {
-      center: [0, 4, 0],
+      center: [0, 0, 0], // [0, 4, 0],
       distance: 15,
       fovy: Math.PI / 3,
       flipY

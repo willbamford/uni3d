@@ -1,7 +1,7 @@
-import bunny from 'bunny'
-import normals from 'angle-normals'
+import createCube from './cube'
+const cube = createCube(5, 5, 5)
 
-function drawBunny (regl) {
+function drawCube (regl) {
   return regl({
     vert: `
       precision mediump float;
@@ -26,11 +26,11 @@ function drawBunny (regl) {
       }
     `,
     attributes: {
-      position: bunny.positions,
-      normal: normals(bunny.cells, bunny.positions)
+      position: cube.positions,
+      normal: cube.normals
     },
-    elements: bunny.cells
+    elements: cube.cells
   })
 }
 
-export default drawBunny
+export default drawCube

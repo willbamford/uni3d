@@ -2,36 +2,16 @@ import createGL from 'gl'
 import createREGL from 'regl'
 import fs from 'fs'
 import createTimer from 'unitimer'
-import Canvas from 'canvas'
-import path from 'path'
 
 import loadResources from './load-resources'
 import { toJpeg } from './gl-to'
 import createCamera from './camera'
 import createDrawCommon from './draw-common'
 import createDrawBackground from './draw-background'
-import createDrawBunny from './draw-bunny'
+// import createDrawBunny from './draw-bunny'
+import createDrawCube from './draw-cube'
+import createDrawTexCube from './draw-tex-cube'
 import { pad4 } from './pad'
-
-const fontPath = path.resolve(__dirname, '../fonts', 'Coiny-Regular.ttf')
-Canvas.registerFont(fontPath, { family: 'Coiny' })
-
-// const Image = Canvas.Image
-const canvas = new Canvas(200, 200)
-const ctx = canvas.getContext('2d')
-
-ctx.font = '30px Coiny'
-ctx.rotate(0.1)
-ctx.fillText('Awesome!', 50, 100)
-
-var te = ctx.measureText('Awesome!')
-ctx.strokeStyle = 'rgba(0,0,0,0.5)'
-ctx.beginPath()
-ctx.lineTo(50, 102)
-ctx.lineTo(50 + te.width, 102)
-ctx.stroke()
-
-console.log('<img src="' + canvas.toDataURL() + '" />')
 
 import { execSync } from 'child_process'
 
@@ -56,7 +36,8 @@ const flipY = true
 const camera = createCamera(regl, flipY)
 const drawCommon = createDrawCommon(regl)
 const drawBackground = createDrawBackground(regl)
-const drawBunny = createDrawBunny(regl)
+const drawObject = createDrawCube(regl) // createDrawBunny(regl)
+const drawTexCube = createDrawTexCube(regl)
 
 function exportRender () {
   const fps = 25
@@ -92,7 +73,7 @@ function exportRender () {
   timerMontage.log(1)
 }
 
-function begin (cube) {
+function begin ({ cube, texture }) {
   timerTotal.start()
   let pixels = null
   const frames = 64
@@ -106,7 +87,8 @@ function begin (cube) {
           depth: 1
         })
         drawBackground()
-        drawBunny()
+        // drawObject()
+        drawTexCube({ texture })
         timerDraw.stop()
 
         timerPixels.start()
@@ -123,9 +105,9 @@ function begin (cube) {
       })
     })
   }
-  timerExport.start()
-  exportRender()
-  timerExport.stop()
+  // timerExport.start()
+  // exportRender()
+  // timerExport.stop()
   timerTotal.stop()
   timers.forEach((timer) => timer.log(1))
 }

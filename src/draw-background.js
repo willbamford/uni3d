@@ -15,6 +15,14 @@ function drawBackground (regl) {
          gl_Position = projection * eye;
       }
     `,
+    frag: `
+      precision mediump float;
+      uniform samplerCube envmap;
+      varying vec3 reflectDir;
+      void main () {
+        gl_FragColor = textureCube(envmap, reflectDir);
+      }
+    `,
     attributes: {
       position: cube.positions
     },
