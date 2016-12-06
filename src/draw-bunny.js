@@ -39,7 +39,7 @@ function drawBunny (regl) {
           light += diffuse * lights[i].color;
         }
 
-        gl_FragColor = vec4(light, 1)
+        gl_FragColor = vec4(light, 1);
         // gl_FragColor = 0.5 * vec4(light, 1) + 0.5 * textureCube(envmap, vReflectDir);
         // gl_FragColor = textureCube(envmap, vReflectDir)
       }
